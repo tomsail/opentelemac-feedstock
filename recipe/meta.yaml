@@ -42,13 +42,13 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - sed
-    - cmake>3.30
+    - cmake >3.30
   host:
     - openmpi
     - metis
     - python
     - numpy
-    - cmake>3.30
+    - cmake >3.30
   run:
     - {{ compiler('fortran') }}
     - {{ compiler('c') }}
@@ -59,7 +59,7 @@ requirements:
     - matplotlib-base
     - scipy
     - mpi4py
-    - cmake>3.30
+    - cmake >3.30
     - numpy
 
 test:
