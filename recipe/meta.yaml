@@ -1,5 +1,5 @@
 {% set name = "opentelemac" %}
-{% set version = "v9.0.0" %}
+{% set version = "v9.1.0" %}
 {% set build = 0 %}
 
 package:
@@ -42,26 +42,25 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - sed
+    - cmake>3.30
   host:
     - openmpi
-    - meson
     - metis
     - python
-    - numpy <2.0dev0
-    - setuptools <65  # [py<312]
+    - numpy
+    - cmake>3.30
   run:
     - {{ compiler('fortran') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - openmpi
     - python
-    - meson
-    - numpy <2.0dev0
     - metis
     - matplotlib-base
     - scipy
     - mpi4py
-    - setuptools <65  # [py<312]
+    - cmake>3.30
+    - numpy
 
 test:
   commands:

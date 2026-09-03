@@ -1,17 +1,16 @@
 # Restore the original environment variables
-export PATH="${OLD_PATH}"
-export PYTHONPATH="${OLD_PYTHONPATH}"
-export LD_LIBRARY_PATH="${OLD_LD_LIBRARY_PATH}"
+if [[ -n "${_TELEMAC_OLD_PATH+x}" ]]; then
+    export PATH="${_TELEMAC_OLD_PATH}"
+    unset _TELEMAC_OLD_PATH
+fi
+if [[ -n "${_TELEMAC_OLD_PYTHONPATH+x}" ]]; then
+    export PYTHONPATH="${_TELEMAC_OLD_PYTHONPATH}"
+    unset _TELEMAC_OLD_PYTHONPATH
+fi
+if [[ -n "${_TELEMAC_OLD_LD_LIBRARY_PATH+x}" ]]; then
+    export LD_LIBRARY_PATH="${_TELEMAC_OLD_LD_LIBRARY_PATH}"
+    unset _TELEMAC_OLD_LD_LIBRARY_PATH
+fi
 
-# Clear the backup variables
-unset OLD_PATH
-unset OLD_PYTHONPATH
-unset OLD_LD_LIBRARY_PATH
-
-# $CONDA_PREFIX/bin remains in OLD_PATH and needs to be manually removed
-export PATH=$(echo "$PATH" | sed "s|:$CONDA_PREFIX/bin||g; s|^$CONDA_PREFIX/bin:||g; s|:$CONDA_PREFIX/bin:|:|g")
-# Optional: Echo the variables to ensure they are correctly restored
-echo "Restored PATH: ${PATH}"
-echo "Removed ${CONDA_PREFIX}/bin from PATH"
-echo "Restored PYTHONPATH: ${PYTHONPATH}"
-echo "Restored LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
+unset HOMETEL
+unset SYSTELCFG
