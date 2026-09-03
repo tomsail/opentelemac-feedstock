@@ -33,6 +33,7 @@ requirements:
     - {{ compiler('fortran') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake >3.30
     - make                                  # [unix]
   host:
