@@ -7,9 +7,18 @@ if [[ -n "${_TELEMAC_OLD_PYTHONPATH+x}" ]]; then
     export PYTHONPATH="${_TELEMAC_OLD_PYTHONPATH}"
     unset _TELEMAC_OLD_PYTHONPATH
 fi
-if [[ -n "${_TELEMAC_OLD_LD_LIBRARY_PATH+x}" ]]; then
-    export LD_LIBRARY_PATH="${_TELEMAC_OLD_LD_LIBRARY_PATH}"
-    unset _TELEMAC_OLD_LD_LIBRARY_PATH
+
+# Shared library path (platform-dependent)
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ -n "${_TELEMAC_OLD_DYLD_LIBRARY_PATH+x}" ]]; then
+        export DYLD_LIBRARY_PATH="${_TELEMAC_OLD_DYLD_LIBRARY_PATH}"
+        unset _TELEMAC_OLD_DYLD_LIBRARY_PATH
+    fi
+else
+    if [[ -n "${_TELEMAC_OLD_LD_LIBRARY_PATH+x}" ]]; then
+        export LD_LIBRARY_PATH="${_TELEMAC_OLD_LD_LIBRARY_PATH}"
+        unset _TELEMAC_OLD_LD_LIBRARY_PATH
+    fi
 fi
 
 unset HOMETEL

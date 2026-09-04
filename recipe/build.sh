@@ -8,9 +8,15 @@ export HOMETEL=$SRC_DIR/opentelemac
 export PATH=$HOMETEL/scripts/python3:$PATH
 export PYTHONPATH=$HOMETEL/scripts/python3
 
+# Point cmake to the host environment's Python (needed for cross-compilation on macOS)
+PYTHON_EXE=$(which python)
+NUMPY_INCLUDE=$(python -c "import numpy; print(numpy.get_include())")
+
 cmake -S "$HOMETEL" -B "$HOMETEL/build" -G "Unix Makefiles" \
    -DCMAKE_BUILD_TYPE=Release \
    -DCMAKE_INSTALL_PREFIX="$PREFIX/opentelemac" \
+   -DPython_EXECUTABLE="$PYTHON_EXE" \
+   -DPython_NumPy_INCLUDE_DIR="$NUMPY_INCLUDE" \
    -DUSE_MPI=ON \
    -DUSE_MED=OFF \
    -DUSE_MUMPS=OFF \
