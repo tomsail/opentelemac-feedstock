@@ -40,7 +40,7 @@ requirements:
     - openmpi
     - metis
     - python
-    - numpy >=1.24
+    - numpy
     - cmake >3.30
   run:
     - {{ compiler('fortran') }}
@@ -48,7 +48,7 @@ requirements:
     - {{ compiler('cxx') }}
     - openmpi
     - python
-    - numpy >=1.24
+    - numpy
     - metis
     - matplotlib-base
     - scipy
