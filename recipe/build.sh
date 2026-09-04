@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 # TELEMAC home directory
 export HOMETEL=$SRC_DIR/opentelemac
@@ -7,38 +8,34 @@ export HOMETEL=$SRC_DIR/opentelemac
 export PATH=$HOMETEL/scripts/python3:$PATH
 export PYTHONPATH=$HOMETEL/scripts/python3
 
-#linux
-if [[ $(uname) == Linux ]]; then
-   # Configuration file
-   export SYSTELCFG=$HOMETEL/configs/systel.debian.cfg
-   export USETELCFG=gnu.shared
-#OSX
-elif [[ $(uname) == Darwin ]]; then
-   # Configuration file
-   cp $RECIPE_DIR/configs/systel.macos.cfg $HOMETEL/configs/systel.macos.cfg
-   export SYSTELCFG=$HOMETEL/configs/systel.macos.cfg
-   export USETELCFG=gfort-mpich
-   # Set TELEMAC version in systel.cfg
-   sed -i "/^modules:/a version:    $TELEMAC_VERSION" "$SYSTELCFG"
-fi
+# Point cmake to the host environment's Python (needed for cross-compilation on macOS)
+PYTHON_EXE=$(which python)
+NUMPY_INCLUDE=$(python -c "import numpy; print(numpy.get_include())")
 
-# Name of the configuration to use
-export LD_LIBRARY_PATH=$HOMETEL/builds/$USETELCFG/wrap_api/lib:$HOMETEL/builds/$USETELCFG/lib
+cmake -S "$HOMETEL" -B "$HOMETEL/build" -G "Unix Makefiles" \
+   -DCMAKE_BUILD_TYPE=Release \
+   -DCMAKE_INSTALL_PREFIX="$PREFIX/opentelemac" \
+   -DPython_EXECUTABLE="$PYTHON_EXE" \
+   -DPython_NumPy_INCLUDE_DIR="$NUMPY_INCLUDE" \
+   -DUSE_MPI=ON \
+   -DUSE_MED=OFF \
+   -DUSE_MUMPS=OFF \
+   -DUSE_AED2=OFF \
+   -DUSE_GOTM=OFF \
+   -DBUILD_TELAPY=ON \
+   -DBUILD_HERMES_WRAPPER=OFF
 
-compile_telemac.py
+cmake --build "$HOMETEL/build" -j${CPU_COUNT}
+cmake --install "$HOMETEL/build"
 
-mkdir -p $PREFIX/opentelemac/configs                     #1 Copy configs
-mkdir -p $PREFIX/opentelemac/builds                      #2 Copy builds
-mkdir -p $PREFIX/opentelemac/scripts                     #3 Copy scripts
-mkdir -p $PREFIX/opentelemac/sources                     #4 Copy sources
-cp -r $SYSTELCFG $PREFIX/opentelemac/configs             #1
-cp -r $HOMETEL/builds/* $PREFIX/opentelemac/builds       #2
-cp -r $HOMETEL/scripts/* $PREFIX/opentelemac/scripts     #3
-cp -r $HOMETEL/sources/* $PREFIX/opentelemac/sources     #4
+# Copy sources (needed at runtime for some TELEMAC operations)
+mkdir -p $PREFIX/opentelemac/sources
+mkdir -p $PREFIX/opentelemac/scripts
+cp -r $HOMETEL/sources/* $PREFIX/opentelemac/sources
+cp -r $HOMETEL/scripts/* $PREFIX/opentelemac/scripts
 
-# AUTO activate /deactivate environments variables for TELEMAC
-for CHANGE in "activate" "deactivate"
-do
-    mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-    cp "${RECIPE_DIR}/scripts/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+# AUTO activate/deactivate environment variables for TELEMAC
+for CHANGE in "activate" "deactivate"; do
+   mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+   cp "${RECIPE_DIR}/scripts/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
 done
